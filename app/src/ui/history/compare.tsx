@@ -7,6 +7,7 @@ import {
   ICompareBranch,
   ComparisonMode,
   IDisplayHistory,
+  IRepositoryState,
 } from '../../lib/app-state'
 import { CommitList } from './commit-list'
 import { Repository } from '../../models/repository'
@@ -30,6 +31,7 @@ import { DragElementType } from '../../models/drag-element'
 
 interface ICompareSidebarProps {
   readonly repository: Repository
+  readonly repositoryState: IRepositoryState
   readonly isLocalRepository: boolean
   readonly compareState: ICompareState
   readonly emoji: Map<string, string>
@@ -282,6 +284,7 @@ export class CompareSidebar extends React.Component<
   private renderActiveTab(view: ICompareBranch) {
     return (
       <div className="compare-commit-list">
+        {this.renderCurrentDiffText()}
         {this.renderCommitList()}
         {view.comparisonMode === ComparisonMode.Behind
           ? this.renderMergeCallToAction(view)
@@ -289,6 +292,56 @@ export class CompareSidebar extends React.Component<
       </div>
     )
   }
+
+  private renderCurrentDiffText() {
+    return null
+    // const numTotalCommits = this.props.compareState.commitSHAs.length
+    // // const numShownCommits =
+    // //   this.props.selectedCommitSha === null ? numTotalCommits : 1
+    // const numFilesChanged = this.props.repositoryState.commitSelection
+    //   .changedFiles.length
+
+    // if (!this.props.currentBranch) {
+    //   // TODO: handle this.
+    //   return
+    // }
+
+    // if (this.props.compareState.formState.kind === HistoryTabMode.History) {
+    //   return
+    // }
+
+    // const branchName =
+    //   this.props.compareState.formState.comparisonMode === ComparisonMode.Ahead
+    //     ? this.props.currentBranch.name
+    //     : this.props.compareState.formState.comparisonBranch.name
+
+    // const text = `Showing ${numFilesChanged} file${
+    //   numFilesChanged > 1 ? 's' : ''
+    // } changed from ${numTotalCommits} commit${numTotalCommits > 1 ? 's' : ''}`
+
+    // return (
+    //   <div className="compare-diff-description">
+    //     {false && (
+    //       <span>
+    //         {text} in <Ref>{branchName}</Ref>
+    //       </span>
+    //     )}
+    //     {this.props.selectedCommitSha && (
+    //       <Button onClick={this.onViewAllChangesClick}>View all</Button>
+    //     )}
+    //   </div>
+    // )
+  }
+
+  // private onViewAllChangesClick = () => {
+  //   this.props.dispatcher.changeCommitSelection(this.props.repository, null)
+
+  //   this.loadChangedFilesScheduler.queue(() => {
+  //     this.props.dispatcher.loadChangedFilesForCurrentSelection(
+  //       this.props.repository
+  //     )
+  //   })
+  // }
 
   private renderFilterList() {
     const {
@@ -400,7 +453,7 @@ export class CompareSidebar extends React.Component<
       } else {
         this.props.dispatcher.executeCompare(this.props.repository, {
           kind: HistoryTabMode.Compare,
-          comparisonMode: ComparisonMode.Behind,
+          comparisonMode: ComparisonMode.Ahead,
           branch,
         })
 
@@ -501,7 +554,7 @@ export class CompareSidebar extends React.Component<
   private onBranchItemClicked = (branch: Branch) => {
     this.props.dispatcher.executeCompare(this.props.repository, {
       kind: HistoryTabMode.Compare,
-      comparisonMode: ComparisonMode.Behind,
+      comparisonMode: ComparisonMode.Ahead,
       branch,
     })
 
