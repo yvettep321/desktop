@@ -29,7 +29,11 @@ import { SignInState } from './stores/sign-in-store'
 import { WindowState } from './window-state'
 import { Shell } from './shells'
 
-import { ApplicableTheme, ApplicationTheme } from '../ui/lib/application-theme'
+import {
+  ApplicableTheme,
+  ApplicationTheme,
+  ICustomTheme,
+} from '../ui/lib/application-theme'
 import { IAccountRepositories } from './stores/api-repositories-store'
 import { ManualConflictResolution } from '../models/manual-conflict-resolution'
 import { Banner } from '../models/banner'
@@ -42,7 +46,6 @@ import {
   MultiCommitOperationDetail,
   MultiCommitOperationStep,
 } from '../models/multi-commit-operation'
-import { DragAndDropIntroType } from '../ui/history/drag-and-drop-intro'
 import { IChangesetData } from './git'
 
 export enum SelectionType {
@@ -96,7 +99,7 @@ export interface IAppState {
   /**
    * The current state of the window, ie maximized, minimized full-screen etc.
    */
-  readonly windowState: WindowState
+  readonly windowState: WindowState | null
 
   /**
    * The current zoom factor of the window represented as a fractional number
@@ -159,13 +162,13 @@ export interface IAppState {
    * because it's used in the toolbar as well as the
    * repository.
    */
-  readonly sidebarWidth: number
+  readonly sidebarWidth: IConstrainedValue
 
   /** The width of the commit summary column in the history view */
-  readonly commitSummaryWidth: number
+  readonly commitSummaryWidth: IConstrainedValue
 
   /** The width of the files list in the stash view */
-  readonly stashedFilesWidth: number
+  readonly stashedFilesWidth: IConstrainedValue
 
   /**
    * Used to highlight access keys throughout the app when the
@@ -184,6 +187,9 @@ export interface IAppState {
 
   /** Whether we should show a confirmation dialog */
   readonly askForConfirmationOnDiscardChanges: boolean
+
+  /** Whether we should show a confirmation dialog */
+  readonly askForConfirmationOnDiscardChangesPermanently: boolean
 
   /** Should the app prompt the user to confirm a force push? */
   readonly askForConfirmationOnForcePush: boolean
@@ -236,6 +242,9 @@ export interface IAppState {
   /** The selected appearance (aka theme) preference */
   readonly selectedTheme: ApplicationTheme
 
+  /** The custom theme  */
+  readonly customTheme?: ICustomTheme
+
   /** The currently applied appearance (aka theme) */
   readonly currentTheme: ApplicableTheme
 
@@ -273,15 +282,20 @@ export interface IAppState {
   readonly commitSpellcheckEnabled: boolean
 
   /**
-   * List of drag & drop intro types that have been shown to the user.
-   */
-  readonly dragAndDropIntroTypesShown: ReadonlySet<DragAndDropIntroType>
-
-  /**
    * Record of what logged in users have been checked to see if thank you is in
    * order for external contributions in latest release.
    */
   readonly lastThankYou: ILastThankYou | undefined
+
+  /**
+   * Whether or not the CI status popover is visible.
+   */
+  readonly showCIStatusPopover: boolean
+
+  /**
+   * Whether or not the user enabled high-signal notifications.
+   */
+  readonly notificationsEnabled: boolean
 }
 
 export enum FoldoutType {
@@ -435,8 +449,8 @@ export interface IRepositoryState {
   /** Is a commit in progress? */
   readonly isCommitting: boolean
 
-  /** Is an amend in progress? */
-  readonly isAmending: boolean
+  /** Commit being amended, or null if none. */
+  readonly commitToAmend: Commit | null
 
   /** The date the repository was last fetched. */
   readonly lastFetched: Date | null
@@ -528,8 +542,8 @@ export interface IBranchesState {
    */
   readonly pullWithRebase?: boolean
 
-  /** Tracking branches that have been rebased within Desktop */
-  readonly rebasedBranches: ReadonlyMap<string, string>
+  /** Tracking branches that have been allowed to be force-pushed within Desktop */
+  readonly forcePushBranches: ReadonlyMap<string, string>
 }
 
 export interface ICommitSelection {
@@ -852,4 +866,19 @@ export type MultiCommitOperationConflictState = {
    * stored in state.
    */
   readonly theirBranch?: string
+}
+
+/**
+ * An interface for describing a desired value and a valid range
+ *
+ * Note that the value can be greater than `max` or less than `min`, it's
+ * an indication of the desired value. The real value needs to be validated
+ * or coerced using a function like `clamp`.
+ *
+ * Yeah this is a terrible name.
+ */
+export interface IConstrainedValue {
+  readonly value: number
+  readonly max: number
+  readonly min: number
 }

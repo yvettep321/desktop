@@ -78,11 +78,6 @@ export function enableUpdateFromEmulatedX64ToARM64(): boolean {
   return enableBetaFeatures()
 }
 
-/** Should we allow using the save dialog when choosing where to clone a repo */
-export function enableSaveDialogOnCloneRepository(): boolean {
-  return true
-}
-
 /** Should we allow setting repository aliases? */
 export function enableRepositoryAliases(): boolean {
   return true
@@ -123,6 +118,16 @@ export function enableLineChangesInCommit(): boolean {
   return true
 }
 
+/** Should we allow high contrast theme option */
+export function enableHighContrastTheme(): boolean {
+  return enableBetaFeatures()
+}
+
+/** Should we allow customizing a theme */
+export function enableCustomizeTheme(): boolean {
+  return enableBetaFeatures()
+}
+
 /** Should we allow using Windows' OpenSSH? */
 export function enableWindowsOpenSSH(): boolean {
   return true
@@ -133,9 +138,37 @@ export function enableSSHAskPass(): boolean {
   return true
 }
 
-/** Should we use the setImmediate alternative? */
-export function enableSetAlmostImmediate(): boolean {
-  // We only noticed the problem with `setImmediate` on macOS, so no need to
-  // use this trick on Windows for now.
-  return __DARWIN__ && enableBetaFeatures()
+/** Should we show ci check runs? */
+export function enableCICheckRuns(): boolean {
+  return true
+}
+
+/** Should ci check runs show logs? */
+export function enableCICheckRunsLogs(): boolean {
+  return false
+}
+
+/** Should we show previous tags as suggestions? */
+export function enablePreviousTagSuggestions(): boolean {
+  return enableBetaFeatures()
+}
+
+/** Should we show a pull-requests quick view? */
+export function enablePullRequestQuickView(): boolean {
+  return enableDevelopmentFeatures()
+}
+
+/** Should we enable high-signal notifications? */
+export function enableHighSignalNotifications(): boolean {
+  return true
+}
+
+/** Should we enable PR review notifications? */
+export function enablePullRequestReviewNotifications(): boolean {
+  return true
+}
+
+/** Should we enable the rerunning of failed and single jobs aka action based checks */
+export function enableReRunFailedAndSingleCheckJobs(): boolean {
+  return true
 }
