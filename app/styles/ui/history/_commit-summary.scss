@@ -25,7 +25,7 @@
 
   &.expanded {
     .commit-summary-description-scroll-view {
-      max-height: none;
+      max-height: 400px;
       overflow: auto;
 
       &:before {
@@ -58,6 +58,21 @@
         width: 100%;
         pointer-events: none;
       }
+    }
+  }
+
+  .commit-unreachable-info {
+    padding: var(--spacing-half) var(--spacing);
+    border-bottom: var(--base-border);
+    display: flex;
+    align-items: center;
+
+    .octicon {
+      margin-right: var(--spacing-half);
+    }
+
+    .link-button-component {
+      margin-right: var(--spacing-half);
     }
   }
 }
@@ -111,13 +126,12 @@
   // Enable text selection inside the title and description elements.
   &-title,
   &-description {
-    span,
-    a {
-      -webkit-user-select: text;
-      user-select: text;
-    }
+    user-select: text;
+    cursor: text;
 
-    span {
+    * {
+      user-select: unset;
+      pointer-events: unset;
       cursor: text;
     }
   }
